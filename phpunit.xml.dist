@@ -21,7 +21,7 @@
         </whitelist>
     </filter>
     <php>
-<!--        <env name="APP_ENV" value="testing"/>-->
+        <env name="IEX_CLOUD_PUBLISHABLE_TOKEN" value="Tpk_yourKeyFromIEXCloud"/>
     </php>
 
     <logging>

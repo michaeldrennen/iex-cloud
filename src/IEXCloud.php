@@ -6,6 +6,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 
 use Exception;
+use MichaelDrennen\IEXCloud\Exceptions\APIKeyMissing;
 use MichaelDrennen\IEXCloud\Exceptions\EndpointNotFound;
 use MichaelDrennen\IEXCloud\Exceptions\UnknownSymbol;
 use MichaelDrennen\IEXCloud\Responses\StockStats;
@@ -127,6 +128,12 @@ class IEXCloud {
             if ( 'Not Found' === (string)$clientException->getResponse()->getBody() ):
                 throw new EndpointNotFound( "IEX Cloud replied with: " . $clientException->getResponse()->getBody() );
             endif;
+
+            if ( 'An API key is required to access this data and no key was provided' === (string)$clientException->getResponse()->getBody() ):
+                throw new APIKeyMissing( "IEX Cloud replied with: " . $clientException->getResponse()->getBody() );
+            endif;
+
+
             // @codeCoverageIgnoreStart
             throw $clientException;
         } catch ( Exception $exception ) {
@@ -140,6 +147,12 @@ class IEXCloud {
         $uri = '/endpointThatDoesNotExist/';
         $uri = $this->version . $uri;
         return $this->makeRequest( 'GET', $uri, [] );
+    }
+
+    public function testingValidRequestWithEmptyToken() {
+        $uri = '/stock/AAPL/stats';
+        $uri = $this->version . $uri;
+        return $this->makeRequest( 'GET', $uri, [ 'token' => NULL ] );
     }
 
 

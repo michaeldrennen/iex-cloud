@@ -3,6 +3,7 @@
 namespace MichaelDrennen\IEXCloud\Tests;
 
 
+use MichaelDrennen\IEXCloud\Exceptions\APIKeyMissing;
 use MichaelDrennen\IEXCloud\Exceptions\EndpointNotFound;
 use MichaelDrennen\IEXCloud\Exceptions\UnknownSymbol;
 use MichaelDrennen\IEXCloud\IEXCloud;
@@ -61,6 +62,15 @@ class IEXCloudTest extends TestCase {
         $this->expectException( EndpointNotFound::class );
         $iexCloud = new IEXCloud( getenv( 'IEX_CLOUD_PUBLISHABLE_TOKEN' ), TRUE, FALSE, 'stable' );
         $iexCloud->testingNotExistentEndpoint();
+    }
+
+    /**
+     * @test
+     */
+    public function callingValidEndpointWithoutTokenShouldThrowException() {
+        $this->expectException( APIKeyMissing::class );
+        $iexCloud = new IEXCloud( getenv( 'IEX_CLOUD_PUBLISHABLE_TOKEN' ), TRUE, FALSE, 'stable' );
+        $iexCloud->testingValidRequestWithEmptyToken();
     }
 
 
