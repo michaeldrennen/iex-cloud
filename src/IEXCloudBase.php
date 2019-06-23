@@ -1,0 +1,198 @@
+<?php
+
+namespace MichaelDrennen\IEXCloud;
+
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
+
+use Exception;
+use MichaelDrennen\IEXCloud\Exceptions\APIKeyMissing;
+use MichaelDrennen\IEXCloud\Exceptions\EndpointNotFound;
+use MichaelDrennen\IEXCloud\Exceptions\UnknownSymbol;
+
+class IEXCloudBase {
+
+    const PRODUCTION_URL     = 'https://cloud.iexapis.com/';
+    const PRODUCTION_SSE_URL = 'https://cloud-sse.iexapis.com/';
+    const SANDBOX_URL        = 'https://sandbox.iexapis.com/';
+    const SANDBOX_SSE_URL    = 'https://sandbox-sse.iexapis.com/';
+
+    /**
+     * @see https://iexcloud.io/console/tokens
+     * @var string
+     */
+    protected $publishableToken;
+
+
+    /**
+     * @see https://iexcloud.io/console/tokens
+     * @var string
+     */
+    protected $secretToken;
+
+
+    /**
+     * @see https://iexcloud.io/docs/api/#sandbox
+     * @var bool Do you want to test your code in your own sandbox with non-production data.
+     */
+    protected $sandbox = FALSE;
+
+
+    /**
+     * @see https://iexcloud.io/docs/api/#streaming
+     * @var bool Do you want to use the streaming endpoints of this API?
+     */
+    protected $sse = FALSE;
+
+
+    /**
+     * @see https://iexcloud.io/docs/api/#versioning
+     * @var string Which version of the IEX Cloud API do you want to access? Defaults to 'stable'
+     */
+    protected $version = 'stable';
+
+
+    protected $baseURL;
+
+    /**
+     * @var Client $client
+     */
+    protected $client;
+
+
+    /**
+     * IEXCloud constructor.
+     * @param string $publishableToken
+     * @param string $secretToken
+     * @param bool $sandbox
+     * @param bool $sse
+     * @param string $version
+     */
+    public function __construct( string $publishableToken, string $secretToken, bool $sandbox = FALSE, bool $sse = FALSE, string $version = 'stable' ) {
+        $this->publishableToken = $publishableToken;
+        $this->secretToken      = $secretToken;
+        $this->sandbox          = $sandbox;
+        $this->sse              = $sse;
+        $this->version          = $version;
+
+        $this->setBaseURL();
+        $this->setClient();
+    }
+
+    /**
+     * Sets the base URL to be used requests to IEX Cloud API endpoints.
+     * @codeCoverageIgnore
+     */
+    protected function setBaseURL() {
+        if ( $this->sandbox && $this->sse ):
+            $this->baseURL = self::SANDBOX_SSE_URL;
+        elseif ( $this->sandbox ):
+            $this->baseURL = self::SANDBOX_URL;
+        elseif ( $this->sse ):
+            $this->baseURL = self::PRODUCTION_SSE_URL;
+        else:
+            $this->baseURL = self::PRODUCTION_URL;
+        endif;
+    }
+
+
+    /**
+     * Set up a GuzzleHttp Client with some default settings.
+     */
+    protected function setClient() {
+        $this->client = new Client( [
+                                        'verify'   => FALSE,
+                                        'base_uri' => $this->baseURL,
+                                    ] );
+    }
+
+    /**
+     * IEX Cloud offers a bunch of options (like filtering results) that are passed as part of the query string.
+     * @param array $options The existing $options array used by the Guzzle client. It gets added to and returned by this function.
+     * @param array $additionalQueryParameters An array of name => value pairs that will get added to the query string sent to the server.
+     * @return array The modified $options array to be used by the Guzzle client.
+     */
+    protected function setAdditionalQueryParameters( array $options, array $additionalQueryParameters = [] ): array {
+        foreach ( $additionalQueryParameters as $key => $value ):
+            $options[ 'query' ][ $key ] = $value;
+        endforeach;
+
+        return $options;
+    }
+
+
+    /**
+     * Some of the IEX Cloud API endpoints require the secret token. These are primarily endpoints that effect your account.
+     * @param bool $requiresSecretToken
+     * @return string
+     */
+    protected function getProperToken( bool $requiresSecretToken = FALSE ) {
+        if ( $requiresSecretToken ):
+            return $this->secretToken;
+        endif;
+        return $this->publishableToken;
+    }
+
+
+    /**
+     * @param string $method
+     * @param string $uri
+     * @param bool $requiresSecretToken
+     * @param array $additionalQueryParameters
+     * @return mixed|\Psr\Http\Message\ResponseInterface
+     * @throws APIKeyMissing
+     * @throws EndpointNotFound
+     * @throws UnknownSymbol
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    protected function makeRequest( string $method, string $uri, bool $requiresSecretToken = FALSE, array $additionalQueryParameters = [] ) {
+
+        $options = [
+            'query' => [
+                'token' => $this->getProperToken( $requiresSecretToken ),
+            ],
+        ];
+
+        $options = $this->setAdditionalQueryParameters( $options, $additionalQueryParameters );
+
+        // Add the version to the URI before the request is made.
+        $uri = $this->version . $uri;
+
+        try {
+            return $this->client->request( $method, $uri, $options );
+        } catch ( ClientException $clientException ) {
+            if ( 'Unknown symbol' === (string)$clientException->getResponse()->getBody() ):
+                throw new UnknownSymbol( "IEX Cloud replied with: " . $clientException->getResponse()->getBody() );
+            endif;
+
+            if ( 'Not Found' === (string)$clientException->getResponse()->getBody() ):
+                throw new EndpointNotFound( "IEX Cloud replied with: " . $clientException->getResponse()->getBody() );
+            endif;
+
+            if ( 'An API key is required to access this data and no key was provided' === (string)$clientException->getResponse()->getBody() ):
+                throw new APIKeyMissing( "IEX Cloud replied with: " . $clientException->getResponse()->getBody() );
+            endif;
+
+
+            // @codeCoverageIgnoreStart
+            throw $clientException;
+        } catch ( Exception $exception ) {
+            throw $exception;
+        }
+        // @codeCoverageIgnoreEnd
+
+    }
+
+    // START FUNCTIONS THAT ARE ONLY MEANT TO BE USED DURING TESTING.
+    public function testingNotExistentEndpoint() {
+        $uri = '/endpointThatDoesNotExist/';
+        return $this->makeRequest( 'GET', $uri, false, [] );
+    }
+
+    public function testingValidRequestWithEmptyToken() {
+        $uri = '/stock/AAPL/stats';
+        return $this->makeRequest( 'GET', $uri, false, [ 'token' => NULL ] );
+    }
+    // END FUNCTIONS THAT ARE ONLY MEANT TO BE USED DURING TESTING.
+
+}

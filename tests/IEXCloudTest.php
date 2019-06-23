@@ -6,18 +6,18 @@ namespace MichaelDrennen\IEXCloud\Tests;
 use MichaelDrennen\IEXCloud\Exceptions\APIKeyMissing;
 use MichaelDrennen\IEXCloud\Exceptions\EndpointNotFound;
 use MichaelDrennen\IEXCloud\Exceptions\UnknownSymbol;
-use MichaelDrennen\IEXCloud\IEXCloud;
 use MichaelDrennen\IEXCloud\Responses\StockStats;
-use PHPUnit\Framework\TestCase;
 
-class IEXCloudTest extends TestCase {
+class IEXCloudTest extends IEXCloudTestBaseTestCase {
+
+
 
 
     /**
      * @test
      */
     public function stockStatsWithValidSymbolShouldReturnStockStatsObject() {
-        $iexCloud   = new IEXCloud( getenv( 'IEX_CLOUD_PUBLISHABLE_TOKEN' ), TRUE, FALSE, 'stable' );
+        $iexCloud   = $this->getIEXCloudSandboxedStableInstance();
         $stockStats = $iexCloud->stockStats( 'AAPL' );
 
         $this->assertInstanceOf( StockStats::class, $stockStats );
@@ -28,7 +28,7 @@ class IEXCloudTest extends TestCase {
      * @test
      */
     public function stockStatsWithValidSymbolUsingFilterShouldReturnOnlyRequestedDataPoints() {
-        $iexCloud   = new IEXCloud( getenv( 'IEX_CLOUD_PUBLISHABLE_TOKEN' ), TRUE, FALSE, 'stable' );
+        $iexCloud   = $this->getIEXCloudSandboxedStableInstance();
         $stockStats = $iexCloud->stockStats( 'AAPL', [ 'sharesOutstanding' ] );
         $this->assertGreaterThan( 0, $stockStats->sharesOutstanding );
         $this->assertNull( $stockStats->companyName );
@@ -40,7 +40,7 @@ class IEXCloudTest extends TestCase {
      * @group new
      */
     public function stockStatsWithValidSymbolAskingForSpecificStatShouldReturnStockStatsObject() {
-        $iexCloud          = new IEXCloud( getenv( 'IEX_CLOUD_PUBLISHABLE_TOKEN' ), TRUE, FALSE, 'stable' );
+        $iexCloud   = $this->getIEXCloudSandboxedStableInstance();
         $sharesOutstanding = $iexCloud->stockStat( 'AAPL', 'sharesOutstanding' );
 
         $this->assertGreaterThan( 0, $sharesOutstanding );
@@ -51,7 +51,7 @@ class IEXCloudTest extends TestCase {
      */
     public function askingForAnInvalidSymbolShouldThrowUnknownSymbolException() {
         $this->expectException( UnknownSymbol::class );
-        $iexCloud = new IEXCloud( getenv( 'IEX_CLOUD_PUBLISHABLE_TOKEN' ), TRUE, FALSE, 'stable' );
+        $iexCloud   = $this->getIEXCloudSandboxedStableInstance();
         $iexCloud->stockStat( 'idontexist', 'sharesOutstanding' );
     }
 
@@ -60,7 +60,7 @@ class IEXCloudTest extends TestCase {
      */
     public function callingAnEndpointThatDoesNotExistShouldThrowException() {
         $this->expectException( EndpointNotFound::class );
-        $iexCloud = new IEXCloud( getenv( 'IEX_CLOUD_PUBLISHABLE_TOKEN' ), TRUE, FALSE, 'stable' );
+        $iexCloud   = $this->getIEXCloudSandboxedStableInstance();
         $iexCloud->testingNotExistentEndpoint();
     }
 
@@ -69,7 +69,7 @@ class IEXCloudTest extends TestCase {
      */
     public function callingValidEndpointWithoutTokenShouldThrowException() {
         $this->expectException( APIKeyMissing::class );
-        $iexCloud = new IEXCloud( getenv( 'IEX_CLOUD_PUBLISHABLE_TOKEN' ), TRUE, FALSE, 'stable' );
+        $iexCloud   = $this->getIEXCloudSandboxedStableInstance();
         $iexCloud->testingValidRequestWithEmptyToken();
     }
 

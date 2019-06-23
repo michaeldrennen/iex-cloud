@@ -17,7 +17,8 @@
     },
     "autoload": {
         "psr-4": {
-            "MichaelDrennen\\IEXCloud\\": "src"
+            "MichaelDrennen\\IEXCloud\\": "src",
+            "MichaelDrennen\\IEXCloud\\Tests\\": "tests"
         }
     }
 }
