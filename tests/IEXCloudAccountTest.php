@@ -11,6 +11,7 @@ class IEXCloudAccountTest extends IEXCloudTestBaseTestCase {
 
     /**
      * @test
+     * @group account
      */
     public function requestForAccountMetadataShouldReturnObjectWithData() {
         $iexCloud = $this->getIEXCloudSandboxedStableInstance();
@@ -22,14 +23,25 @@ class IEXCloudAccountTest extends IEXCloudTestBaseTestCase {
 
     /**
      * @test
+     * @group account
      */
     public function requestForAccountUsageShouldReturnObjectWithData() {
         $iexCloud = $this->getIEXCloudSandboxedStableInstance();
         $object   = $iexCloud->accountUsage();
-
-        print_r($object);
         $this->assertInstanceOf( Usage::class, $object );
         $this->assertIsNumeric( $object->monthlyUsage );
+    }
+
+
+    /**
+     * @test
+     * @group account
+     */
+    public function enablePayAsYouGoShouldEnableIt(){
+        $iexCloud = $this->getIEXCloudSandboxedStableInstance();
+        $object   = $iexCloud->payAsYouGo(true);
+
+
     }
 
 

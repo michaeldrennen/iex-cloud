@@ -47,6 +47,21 @@ class IEXCloud extends IEXCloudBase {
         return new Usage( $response );
     }
 
+    public function payAsYouGo( bool $allow ): bool {
+        $uri = '/account/payasyougo';
+
+        $formParams = [
+//            'token' => $this->getProperToken( TRUE ),
+            'allow' => $allow,
+        ];
+        $response = $this->makeRequest( 'POST', $uri, TRUE, [], $formParams );
+        var_dump( $response );
+        $jsonString = (string)$response->getBody();
+        print_r( $jsonString );
+        $a = \GuzzleHttp\json_decode( $jsonString, TRUE );
+        print_r( $a );
+    }
+
 
     /**
      * @see https://iexcloud.io/docs/api/#key-stats

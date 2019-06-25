@@ -121,6 +121,15 @@ class IEXCloudBase {
     }
 
 
+    protected function setAdditionalFormParams( array $options, array $additionalFormParameters = [] ): array {
+        foreach ( $additionalFormParameters as $key => $value ):
+            $options[ 'form_params' ][ $key ] = $value;
+        endforeach;
+
+        return $options;
+    }
+
+
     /**
      * Some of the IEX Cloud API endpoints require the secret token. These are primarily endpoints that effect your account.
      * @param bool $requiresSecretToken
@@ -139,21 +148,39 @@ class IEXCloudBase {
      * @param string $uri
      * @param bool $requiresSecretToken
      * @param array $additionalQueryParameters
+     * @param array $formParams Parameters for a POST request.
      * @return mixed|\Psr\Http\Message\ResponseInterface
      * @throws APIKeyMissing
      * @throws EndpointNotFound
      * @throws UnknownSymbol
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    protected function makeRequest( string $method, string $uri, bool $requiresSecretToken = FALSE, array $additionalQueryParameters = [] ) {
+    protected function makeRequest( string $method, string $uri, bool $requiresSecretToken = FALSE, array $additionalQueryParameters = [], array $formParams = [] ) {
 
-        $options = [
-            'query' => [
-                'token' => $this->getProperToken( $requiresSecretToken ),
-            ],
-        ];
+        if ( 'GET' === $method ):
+            $options = [
+                'query'       => [
+                    'token' => $this->getProperToken( $requiresSecretToken ),
+                ],
+                'form_params' => NULL,
+            ];
+        else:
+            $options = [
+                'query'       => [
+                    'token' => $this->getProperToken( $requiresSecretToken ),
+                ],
+
+                'form_params' => [
+                    'format' => 'csv',
+//                    'token'  => $this->getProperToken( $requiresSecretToken ),
+                ],
+            ];
+        endif;
+
 
         $options = $this->setAdditionalQueryParameters( $options, $additionalQueryParameters );
+        $options = $this->setAdditionalFormParams( $options, $formParams );
+
 
         // Add the version to the URI before the request is made.
         $uri = $this->version . $uri;
@@ -186,12 +213,12 @@ class IEXCloudBase {
     // START FUNCTIONS THAT ARE ONLY MEANT TO BE USED DURING TESTING.
     public function testingNotExistentEndpoint() {
         $uri = '/endpointThatDoesNotExist/';
-        return $this->makeRequest( 'GET', $uri, false, [] );
+        return $this->makeRequest( 'GET', $uri, FALSE, [] );
     }
 
     public function testingValidRequestWithEmptyToken() {
         $uri = '/stock/AAPL/stats';
-        return $this->makeRequest( 'GET', $uri, false, [ 'token' => NULL ] );
+        return $this->makeRequest( 'GET', $uri, FALSE, [ 'token' => NULL ] );
     }
     // END FUNCTIONS THAT ARE ONLY MEANT TO BE USED DURING TESTING.
 
