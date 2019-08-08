@@ -171,8 +171,7 @@ class IEXCloudBase {
                 ],
 
                 'form_params' => [
-                    'format' => 'csv',
-//                    'token'  => $this->getProperToken( $requiresSecretToken ),
+                    'token'  => $this->getProperToken( $requiresSecretToken ),
                 ],
             ];
         endif;

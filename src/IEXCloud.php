@@ -47,14 +47,23 @@ class IEXCloud extends IEXCloudBase {
         return new Usage( $response );
     }
 
+    /**
+     * @param bool $allow
+     * @return bool
+     * @throws EndpointNotFound
+     * @throws Exceptions\APIKeyMissing
+     * @throws UnknownSymbol
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @see https://iexcloud.io/docs/api/#pay-as-you-go
+     */
     public function payAsYouGo( bool $allow ): bool {
         $uri = '/account/payasyougo';
 
-        $formParams = [
-//            'token' => $this->getProperToken( TRUE ),
+        $additionalQueryParameters = [
             'allow' => $allow,
+            'token' => NULL,
         ];
-        $response = $this->makeRequest( 'POST', $uri, TRUE, [], $formParams );
+        $response                  = $this->makeRequest( 'POST', $uri, TRUE, [], $additionalQueryParameters );
         var_dump( $response );
         $jsonString = (string)$response->getBody();
         print_r( $jsonString );
@@ -102,5 +111,43 @@ class IEXCloud extends IEXCloudBase {
         return (string)$response->getBody();
     }
 
+
+    /**
+     * @param string $symbol
+     * @param string $range
+     * @param array $queryStringParameters
+     * @throws Exception
+     * @see https://iexcloud.io/docs/api/#historical-prices
+     */
+    public function stockChart( string $symbol, string $range, array $queryStringParameters ) {
+        $validRanges = [
+            'max', '5y', '2y', '1y', 'ytd', '6m', '3m', '1m', '1mm', '5d', 'date',
+        ];
+
+        if ( FALSE === in_array( $range, $validRanges ) ):
+            throw new Exception( "Your range param needs to be one of these values: " . implode( ', ', $validRanges ) . " See https://iexcloud.io/docs/api/#historical-prices for an explanation of those values." );
+        endif;
+
+        $validQueryStringParameters = [
+            'chartCloseOnly',
+            'chartByDay',
+            'chartSimplify',
+            'chartInterval',
+            'changeFromClose',
+            'chartLast',
+            'range',
+            'exactDate'
+        ];
+
+        foreach($queryStringParameters as $name => $value):
+            if ( FALSE === in_array( $range, $validQueryStringParameters ) ):
+                throw new Exception( "Your query string parameter '" . $name . "' is not in the valid list of parameters: " . implode( ', ', $validRanges ) . " See https://iexcloud.io/docs/api/#historical-prices for an explanation of those values." );
+            endif;
+        endforeach;
+
+
+
+
+    }
 
 }

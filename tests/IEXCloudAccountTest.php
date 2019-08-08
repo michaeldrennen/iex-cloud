@@ -36,10 +36,16 @@ class IEXCloudAccountTest extends IEXCloudTestBaseTestCase {
     /**
      * @test
      * @group account
+     * @group payg
      */
-    public function enablePayAsYouGoShouldEnableIt(){
+    public function enablePayAsYouGoShouldEnableIt() {
         $iexCloud = $this->getIEXCloudSandboxedStableInstance();
-        $object   = $iexCloud->payAsYouGo(true);
+        try {
+            $object = $iexCloud->payAsYouGo( TRUE );
+        } catch ( \Exception $exception ) {
+            echo $exception->getTraceAsString();
+            echo $exception->getMessage();
+        }
 
 
     }
