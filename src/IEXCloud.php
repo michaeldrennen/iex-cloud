@@ -8,6 +8,7 @@ use MichaelDrennen\IEXCloud\Exceptions\UnknownSymbol;
 use MichaelDrennen\IEXCloud\Responses\Account\Metadata;
 use MichaelDrennen\IEXCloud\Responses\Account\Usage;
 use MichaelDrennen\IEXCloud\Responses\AccountMetadata;
+use MichaelDrennen\IEXCloud\Responses\Stocks\HistoricalPrices;
 use MichaelDrennen\IEXCloud\Responses\StockStats;
 
 class IEXCloud extends IEXCloudBase {
@@ -114,19 +115,22 @@ class IEXCloud extends IEXCloudBase {
 
     /**
      * @param string $symbol
-     * @param string $range
+     * @param string|NULL $range
      * @param array $queryStringParameters
-     * @throws Exception
+     * @param string|NULL $date
+     * @return HistoricalPrices
+     * @throws EndpointNotFound
+     * @throws Exceptions\APIKeyMissing
+     * @throws UnknownSymbol
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @note Prior trading day adjusted data available after 4am ET Tue-Sat
      * @see https://iexcloud.io/docs/api/#historical-prices
      */
-    public function stockChart( string $symbol, string $range, array $queryStringParameters ) {
+    public function stockChart( string $symbol, string $range = NULL, array $queryStringParameters = [], string $date = NULL ): HistoricalPrices {
+        //
         $validRanges = [
-            'max', '5y', '2y', '1y', 'ytd', '6m', '3m', '1m', '1mm', '5d', 'date',
+            'max', '5y', '2y', '1y', 'ytd', '6m', '3m', '1m', '1mm', '5d', 'date', NULL,
         ];
-
-        if ( FALSE === in_array( $range, $validRanges ) ):
-            throw new Exception( "Your range param needs to be one of these values: " . implode( ', ', $validRanges ) . " See https://iexcloud.io/docs/api/#historical-prices for an explanation of those values." );
-        endif;
 
         $validQueryStringParameters = [
             'chartCloseOnly',
@@ -136,18 +140,49 @@ class IEXCloud extends IEXCloudBase {
             'changeFromClose',
             'chartLast',
             'range',
-            'exactDate'
+            'exactDate',
         ];
 
-        foreach($queryStringParameters as $name => $value):
-            if ( FALSE === in_array( $range, $validQueryStringParameters ) ):
-                throw new Exception( "Your query string parameter '" . $name . "' is not in the valid list of parameters: " . implode( ', ', $validRanges ) . " See https://iexcloud.io/docs/api/#historical-prices for an explanation of those values." );
+        // Check to make sure the range parameter is a supported value.
+        if ( FALSE === in_array( $range, $validRanges ) ):
+            throw new Exception( "Your range param needs to be one of these values: " . implode( ', ', $validRanges ) . " See https://iexcloud.io/docs/api/#historical-prices for an explanation of those values." );
+        endif;
+
+        // Check if the user set the 'range' to 'date', but didn't pass the required date parameter.
+        if ( 'date' === $range && is_null( $date ) ):
+            throw new Exception( "Your 'range' parameter was set to 'date', but you did not pass in the required 'date' parameter in the function call." );
+        endif;
+
+        // Check to make sure the query parameters, if any, are all in the supported list.
+        foreach ( $queryStringParameters as $name => $value ):
+            if ( FALSE === in_array( $name, $validQueryStringParameters ) ):
+                throw new Exception( "Your query string parameter '" . $name . "' is not in the valid list of parameters: " . implode( ', ', $validQueryStringParameters ) . " See https://iexcloud.io/docs/api/#historical-prices for an explanation of those values." );
             endif;
         endforeach;
 
 
+        $uri = '/stock/' . $symbol . '/chart';
+
+        if ( $range ):
+            $uri .= '/' . $range;
+        endif;
+
+        // No need to check if the range was set to 'date'. That was already done in this method.
+        if ( $date ):
+            $uri .= '/' . $date;
+        endif;
+
+        if ( FALSE === empty( $queryStringParameters ) ):
+            $uri .= '?' . http_build_query( $queryStringParameters );
+        endif;
+
+        $response = $this->makeRequest( 'GET', $uri, TRUE );
 
 
+        print_r( (string)$response->getBody() );
+        flush();
+        die();
+        return new HistoricalPrices( $response );
     }
 
 }

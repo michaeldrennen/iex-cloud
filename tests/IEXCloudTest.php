@@ -37,7 +37,6 @@ class IEXCloudTest extends IEXCloudTestBaseTestCase {
 
     /**
      * @test
-     * @group new
      */
     public function stockStatsWithValidSymbolAskingForSpecificStatShouldReturnStockStatsObject() {
         $iexCloud   = $this->getIEXCloudSandboxedStableInstance();
@@ -45,6 +44,7 @@ class IEXCloudTest extends IEXCloudTestBaseTestCase {
 
         $this->assertGreaterThan( 0, $sharesOutstanding );
     }
+
 
     /**
      * @test
@@ -72,6 +72,10 @@ class IEXCloudTest extends IEXCloudTestBaseTestCase {
         $iexCloud   = $this->getIEXCloudSandboxedStableInstance();
         $iexCloud->testingValidRequestWithEmptyToken();
     }
+
+
+
+
 
 
 }
