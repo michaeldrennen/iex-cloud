@@ -179,9 +179,9 @@ class IEXCloud extends IEXCloudBase {
         $response = $this->makeRequest( 'GET', $uri, TRUE );
 
 
-        print_r( (string)$response->getBody() );
-        flush();
-        die();
+//        print_r( (string)$response->getBody() );
+//        flush();
+//        die();
         return new HistoricalPrices( $response );
     }
 

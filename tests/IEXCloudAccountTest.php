@@ -34,7 +34,7 @@ class IEXCloudAccountTest extends IEXCloudTestBaseTestCase {
 
 
     /**
-     * @test
+     * @skiptest
      * @group account
      * @group payg
      */

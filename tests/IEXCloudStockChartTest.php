@@ -11,6 +11,7 @@ class IEXCloudStockChartTest extends IEXCloudTestBaseTestCase {
 
     /**
      * @test
+     * @group chart
      */
     public function stockChartWithValidSymbolAndNoRangeShouldReturnResult() {
         $iexCloud         = $this->getIEXCloudSandboxedStableInstance();
@@ -40,9 +41,6 @@ class IEXCloudStockChartTest extends IEXCloudTestBaseTestCase {
             'chartByDay' => TRUE,
         ], '20190220' );
         $this->assertInstanceOf( HistoricalPrices::class, $historicalPrices );
-        print_r( $historicalPrices );
-        flush();
-        die();
     }
 
 
