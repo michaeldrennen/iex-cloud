@@ -3,6 +3,7 @@
 namespace MichaelDrennen\IEXCloud\Tests;
 
 use MichaelDrennen\IEXCloud\Exceptions\UnknownSymbol;
+use MichaelDrennen\IEXCloud\Responses\Stocks\HistoricalPrice;
 use MichaelDrennen\IEXCloud\Responses\Stocks\HistoricalPrices;
 
 
@@ -38,9 +39,11 @@ class IEXCloudStockChartTest extends IEXCloudTestBaseTestCase {
     public function stockChartWithValidSymbolAndGivenDateShouldReturnResult() {
         $iexCloud         = $this->getIEXCloudSandboxedStableInstance();
         $historicalPrices = $iexCloud->stockChart( 'AAPL', 'date', [
-            'chartByDay' => TRUE,
+            'chartByDay' => 'true',
         ], '20190220' );
         $this->assertInstanceOf( HistoricalPrices::class, $historicalPrices );
+        $this->assertNotEmpty( $historicalPrices->prices );
+        $this->assertInstanceOf( HistoricalPrice::class, $historicalPrices->prices[ 0 ] );
     }
 
 

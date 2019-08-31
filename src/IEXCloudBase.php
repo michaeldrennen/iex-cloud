@@ -154,6 +154,7 @@ class IEXCloudBase {
      * @throws EndpointNotFound
      * @throws UnknownSymbol
      * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws Exception
      */
     protected function makeRequest( string $method, string $uri, bool $requiresSecretToken = FALSE, array $additionalQueryParameters = [], array $formParams = [] ) {
 

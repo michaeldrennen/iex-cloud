@@ -172,11 +172,7 @@ class IEXCloud extends IEXCloudBase {
             $uri .= '/' . $date;
         endif;
 
-        if ( FALSE === empty( $queryStringParameters ) ):
-            $uri .= '?' . http_build_query( $queryStringParameters );
-        endif;
-
-        $response = $this->makeRequest( 'GET', $uri, TRUE );
+        $response = $this->makeRequest( 'GET', $uri, TRUE, $queryStringParameters );
 
         return new HistoricalPrices( $response );
     }
