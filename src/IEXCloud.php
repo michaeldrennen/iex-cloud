@@ -1,5 +1,5 @@
 <?php
-
+//test
 namespace MichaelDrennen\IEXCloud;
 
 use Exception;
@@ -8,9 +8,15 @@ use MichaelDrennen\IEXCloud\Exceptions\UnknownSymbol;
 use MichaelDrennen\IEXCloud\Responses\Account\Metadata;
 use MichaelDrennen\IEXCloud\Responses\Account\Usage;
 use MichaelDrennen\IEXCloud\Responses\AccountMetadata;
+use MichaelDrennen\IEXCloud\Responses\Reference\Symbols;
+use MichaelDrennen\IEXCloud\Responses\Reference\SearchResults;
 use MichaelDrennen\IEXCloud\Responses\Stocks\HistoricalPrices;
 use MichaelDrennen\IEXCloud\Responses\StockStats;
 
+/**
+ * Class IEXCloud
+ * @package MichaelDrennen\IEXCloud
+ */
 class IEXCloud extends IEXCloudBase {
 
 
@@ -177,4 +183,66 @@ class IEXCloud extends IEXCloudBase {
         return new HistoricalPrices( $response );
     }
 
+
+    /**
+     * Returns an array of symbols up to the top 10 matches.
+     * Results will be sorted for relevancy.
+     * Search currently defaults to equities only, where the symbol returned is supported by endpoints listed under the Stocks category.
+     * This endpoint is useful for creating an autocomplete search box.
+     * @param string $fragment
+     * @return string
+     * @throws EndpointNotFound
+     * @throws Exceptions\APIKeyMissing
+     * @throws UnknownSymbol
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @see https://iexcloud.io/docs/api/#search
+     */
+    public function search( string $fragment ): SearchResults {
+        $uri      = '/search/' . $fragment;
+        $response = $this->makeRequest( 'GET', $uri, FALSE );
+        return new SearchResults( $response );
+    }
+
+
+    /**
+     * @return Symbols
+     * @throws EndpointNotFound
+     * @throws Exceptions\APIKeyMissing
+     * @throws UnknownSymbol
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function symbols(): Symbols {
+        $uri      = '/ref-data/symbols';
+        $response = $this->makeRequest( 'GET', $uri, FALSE );
+        return new Symbols( $response );
+    }
+
+
+    /**
+     * Returns an array of symbols the Investors Exchange supports for trading
+     * @return Symbols
+     * @throws EndpointNotFound
+     * @throws Exceptions\APIKeyMissing
+     * @throws UnknownSymbol
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function iexSymbols(): Symbols {
+        $uri      = '/ref-data/iex/symbols';
+        $response = $this->makeRequest( 'GET', $uri, FALSE );
+        return new Symbols( $response );
+    }
+
+    /**
+     * @param string $region
+     * @return Symbols
+     * @throws EndpointNotFound
+     * @throws Exceptions\APIKeyMissing
+     * @throws UnknownSymbol
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function symbolsInternational(string $region ): Symbols {
+        $uri      = '/ref-data/region/' . $region . '/symbols';
+        $response = $this->makeRequest( 'GET', $uri, FALSE );
+        return new Symbols( $response );
+    }
 }
