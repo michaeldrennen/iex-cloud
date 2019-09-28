@@ -1,6 +1,6 @@
 <?php
 
-namespace MichaelDrennen\IEXCloud;
+namespace MichaelDrennen\IEXCloud\Traits;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
@@ -10,12 +10,12 @@ use MichaelDrennen\IEXCloud\Exceptions\APIKeyMissing;
 use MichaelDrennen\IEXCloud\Exceptions\EndpointNotFound;
 use MichaelDrennen\IEXCloud\Exceptions\UnknownSymbol;
 
-class IEXCloudBase {
+trait BaseTrait {
 
-    const PRODUCTION_URL     = 'https://cloud.iexapis.com/';
-    const PRODUCTION_SSE_URL = 'https://cloud-sse.iexapis.com/';
-    const SANDBOX_URL        = 'https://sandbox.iexapis.com/';
-    const SANDBOX_SSE_URL    = 'https://sandbox-sse.iexapis.com/';
+    protected $PRODUCTION_URL     = 'https://cloud.iexapis.com/';
+    protected $PRODUCTION_SSE_URL = 'https://cloud-sse.iexapis.com/';
+    protected $SANDBOX_URL        = 'https://sandbox.iexapis.com/';
+    protected $SANDBOX_SSE_URL    = 'https://sandbox-sse.iexapis.com/';
 
     /**
      * @see https://iexcloud.io/console/tokens
@@ -85,13 +85,13 @@ class IEXCloudBase {
      */
     protected function setBaseURL() {
         if ( $this->sandbox && $this->sse ):
-            $this->baseURL = self::SANDBOX_SSE_URL;
+            $this->baseURL = $this->SANDBOX_SSE_URL;
         elseif ( $this->sandbox ):
-            $this->baseURL = self::SANDBOX_URL;
+            $this->baseURL = $this->SANDBOX_URL;
         elseif ( $this->sse ):
-            $this->baseURL = self::PRODUCTION_SSE_URL;
+            $this->baseURL = $this->PRODUCTION_SSE_URL;
         else:
-            $this->baseURL = self::PRODUCTION_URL;
+            $this->baseURL = $this->PRODUCTION_URL;
         endif;
     }
 

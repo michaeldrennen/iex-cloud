@@ -74,4 +74,31 @@ class IEXCloudStockChartTest extends IEXCloudTestBaseTestCase {
         $iexCloud->stockChart( 'AAPL', 'notValidRange', [ 'invalidQueryString' => 'foobar' ] );
     }
 
+
+    /**
+     * @test
+     * @group 1mm
+     */
+    public function stockChartWithValidSymbolAndOneMonthShouldReturn30MinuteValues() {
+        $guzzleRequestOptions = [ 'debug' => FALSE ]; // Set true for debugging
+        $iexCloud             = $this->getIEXCloudSandboxedStableInstance();
+        $historicalPrices     = $iexCloud->stockChart( 'AAPL', '1mm', [], NULL, $guzzleRequestOptions );
+        $this->assertTrue( count( $historicalPrices->prices ) > 5 );
+    }
+
+    /**
+     * @test
+     * @group date
+     */
+    public function stockChartWithValidSymbolAndChartByDayWillReturnOneMinuteData() {
+        $iexCloudQueryStringParameters = [
+            'chartByDay' => 'true',
+        ];
+        $guzzleRequestOptions          = [ 'debug' => 'true' ]; // Set 'true' for debugging
+
+        $iexCloud         = $this->getIEXCloudSandboxedStableInstance();
+        $historicalPrices = $iexCloud->stockChart( 'AAPL', 'date', $iexCloudQueryStringParameters, 20190905, $guzzleRequestOptions );
+        print_r( $historicalPrices ); flush();
+    }
+
 }
