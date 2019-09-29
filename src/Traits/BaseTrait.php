@@ -60,35 +60,6 @@ trait BaseTrait {
     protected $client;
 
 
-
-
-    /**
-     * Sets the base URL to be used requests to IEX Cloud API endpoints.
-     * @codeCoverageIgnore
-     */
-    protected function setBaseURL() {
-        if ( $this->sandbox && $this->sse ):
-            $this->baseURL = $this->SANDBOX_SSE_URL;
-        elseif ( $this->sandbox ):
-            $this->baseURL = $this->SANDBOX_URL;
-        elseif ( $this->sse ):
-            $this->baseURL = $this->PRODUCTION_SSE_URL;
-        else:
-            $this->baseURL = $this->PRODUCTION_URL;
-        endif;
-    }
-
-
-    /**
-     * Set up a GuzzleHttp Client with some default settings.
-     */
-    protected function setClient() {
-        $this->client = new Client( [
-                                        'verify'   => FALSE,
-                                        'base_uri' => $this->baseURL,
-                                    ] );
-    }
-
     /**
      * IEX Cloud offers a bunch of options (like filtering results) that are passed as part of the query string.
      * @param array $options The existing $options array used by the Guzzle client. It gets added to and returned by this function.

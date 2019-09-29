@@ -2,12 +2,18 @@
 
 namespace MichaelDrennen\IEXCloud;
 
+use GuzzleHttp\Client;
 use MichaelDrennen\IEXCloud\Traits\AccountTrait;
 use MichaelDrennen\IEXCloud\Traits\BaseTrait;
 use MichaelDrennen\IEXCloud\Traits\Stocks\HistoricalPricesTrait;
 use MichaelDrennen\IEXCloud\Traits\Stocks\KeyStatsTrait;
 
 class IEXCloud {
+
+    use BaseTrait;
+    use AccountTrait;
+    use KeyStatsTrait;
+    use HistoricalPricesTrait;
 
     /**
      * IEXCloud constructor.
@@ -28,9 +34,33 @@ class IEXCloud {
         $this->setClient();
     }
 
-    use BaseTrait;
-    use AccountTrait;
-    use KeyStatsTrait;
-    use HistoricalPricesTrait;
+    /**
+     * Sets the base URL to be used requests to IEX Cloud API endpoints.
+     * @codeCoverageIgnore
+     */
+    protected function setBaseURL() {
+        if ( $this->sandbox && $this->sse ):
+            $this->baseURL = $this->SANDBOX_SSE_URL;
+        elseif ( $this->sandbox ):
+            $this->baseURL = $this->SANDBOX_URL;
+        elseif ( $this->sse ):
+            $this->baseURL = $this->PRODUCTION_SSE_URL;
+        else:
+            $this->baseURL = $this->PRODUCTION_URL;
+        endif;
+    }
+
+
+    /**
+     * Set up a GuzzleHttp Client with some default settings.
+     */
+    protected function setClient() {
+        $this->client = new Client( [
+                                        'verify'   => FALSE,
+                                        'base_uri' => $this->baseURL,
+                                    ] );
+    }
+
+
 
 }
