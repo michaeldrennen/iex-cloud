@@ -1,38 +1,9 @@
 <?php
 
-namespace MichaelDrennen\IEXCloud\Responses;
+namespace MichaelDrennen\IEXCloud\Responses\Stocks;
 
-//    [week52change] => 0.077354
-//    [week52high] => 234.06
-//    [week52low] => 146
-//    [marketcap] => 933783361460
-//    [employees] => 136061
-//    [day200MovingAvg] => 197.64
-//    [day50MovingAvg] => 202.59
-//    [float] => 4704552144
-//    [avg10Volume] => 25294720.6
-//    [avg30Volume] => 30403608.1
-//    [ttmEPS] => 12.49
-//    [ttmDividendRate] => 2.98
-//    [companyName] => Apple, Inc.
-//    [sharesOutstanding] => 4820779753
-//    [maxChangePercent] => 215.057356
-//    [year5ChangePercent] => 1.494389
-//    [year2ChangePercent] => 0.376306
-//    [year1ChangePercent] => 0.074971
-//    [ytdChangePercent] => 0.2715
-//    [month6ChangePercent] => 0.36788
-//    [month3ChangePercent] => 0.041871
-//    [month1ChangePercent] => 0.090838
-//    [day30ChangePercent] => 0.008147
-//    [day5ChangePercent] => 0.02626
-//    [nextDividendDate] =>
-//    [dividendYield] => 0.01486879381043
-//    [nextEarningsDate] => 2019-07-24
-//    [exDividendDate] => 2019-05-18
-//    [peRatio] => 17.3
-//    [beta] => 1.5544562078851
 
+use MichaelDrennen\IEXCloud\Responses\IEXCloudResponse;
 
 /**
  * Class StockStats

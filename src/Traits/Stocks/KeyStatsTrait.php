@@ -7,7 +7,7 @@ use Exception;
 use MichaelDrennen\IEXCloud\Exceptions\APIKeyMissing;
 use MichaelDrennen\IEXCloud\Exceptions\EndpointNotFound;
 use MichaelDrennen\IEXCloud\Exceptions\UnknownSymbol;
-use MichaelDrennen\IEXCloud\Responses\StockStats;
+use MichaelDrennen\IEXCloud\Responses\Stocks\StockStats;
 use MichaelDrennen\IEXCloud\Traits\BaseTrait;
 
 trait KeyStatsTrait {
