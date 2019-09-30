@@ -61,6 +61,29 @@ class IEXCloud {
                                     ] );
     }
 
+    /**
+     * IEX Cloud offers a bunch of options (like filtering results) that are passed as part of the query string.
+     * @param array $options The existing $options array used by the Guzzle client. It gets added to and returned by this function.
+     * @param array $additionalQueryParameters An array of name => value pairs that will get added to the query string sent to the server.
+     * @return array The modified $options array to be used by the Guzzle client.
+     */
+    protected function setAdditionalQueryParameters( array $options, array $additionalQueryParameters = [] ): array {
+        foreach ( $additionalQueryParameters as $key => $value ):
+            $options[ 'query' ][ $key ] = $value;
+        endforeach;
+
+        return $options;
+    }
+
+
+    protected function setAdditionalFormParams( array $options, array $additionalFormParameters = [] ): array {
+        foreach ( $additionalFormParameters as $key => $value ):
+            $options[ 'form_params' ][ $key ] = $value;
+        endforeach;
+
+        return $options;
+    }
+
 
 
 }
