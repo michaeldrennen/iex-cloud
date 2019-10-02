@@ -9,14 +9,18 @@ use MichaelDrennen\IEXCloud\Exceptions\APIKeyMissing;
 use MichaelDrennen\IEXCloud\Exceptions\EndpointNotFound;
 use MichaelDrennen\IEXCloud\Exceptions\UnknownSymbol;
 use MichaelDrennen\IEXCloud\Traits\AccountTrait;
+use MichaelDrennen\IEXCloud\Traits\IEX\LastTrait;
 use MichaelDrennen\IEXCloud\Traits\Stocks\HistoricalPricesTrait;
 use MichaelDrennen\IEXCloud\Traits\Stocks\KeyStatsTrait;
+use MichaelDrennen\IEXCloud\Traits\Stocks\QuoteTrait;
 
 class IEXCloud {
 
     use AccountTrait;
     use KeyStatsTrait;
     use HistoricalPricesTrait;
+    //use LastTrait; // See notes.
+    use QuoteTrait;
 
 
     protected $PRODUCTION_URL     = 'https://cloud.iexapis.com/';
@@ -138,8 +142,8 @@ class IEXCloud {
 
 
     /**
-     * I originally created this method to pass the debug flag into the GuzzleHTTP request options
-     * for development and testing.
+     * I originally created this method to pass the debug flag into the GuzzleHTTP
+     * request options for development and testing.
      * @param array $options
      * @param array $guzzleRequestOptions
      * @return array
