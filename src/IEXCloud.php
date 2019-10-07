@@ -10,6 +10,7 @@ use MichaelDrennen\IEXCloud\Exceptions\EndpointNotFound;
 use MichaelDrennen\IEXCloud\Exceptions\UnknownSymbol;
 use MichaelDrennen\IEXCloud\Traits\AccountTrait;
 use MichaelDrennen\IEXCloud\Traits\IEX\LastTrait;
+use MichaelDrennen\IEXCloud\Traits\Stocks\CompanyTrait;
 use MichaelDrennen\IEXCloud\Traits\Stocks\HistoricalPricesTrait;
 use MichaelDrennen\IEXCloud\Traits\Stocks\KeyStatsTrait;
 use MichaelDrennen\IEXCloud\Traits\Stocks\QuoteTrait;
@@ -21,6 +22,7 @@ class IEXCloud {
     use HistoricalPricesTrait;
     //use LastTrait; // See notes.
     use QuoteTrait;
+    use CompanyTrait;
 
 
     protected $PRODUCTION_URL     = 'https://cloud.iexapis.com/';

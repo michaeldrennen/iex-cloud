@@ -29,7 +29,7 @@ class IEXCloudStockQuoteTest extends IEXCloudTestBaseTestCase {
      */
     public function stockQuoteWithFieldSpecifiedShouldReturnOnlyField() {
         $iexCloud = $this->getIEXCloudSandboxedStableInstance();
-        $iexAskPrice    = $iexCloud->quoteField( 'AAPL','iexAskPrice' );
+        $iexAskPrice    = $iexCloud->quoteField( 'AAPL','previousClose' );
         $this->assertIsNumeric( $iexAskPrice );
     }
 
