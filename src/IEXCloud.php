@@ -186,7 +186,12 @@ class IEXCloud {
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws Exception
      */
-    protected function makeRequest( string $method, string $uri, bool $requiresSecretToken = FALSE, array $additionalQueryParameters = [], array $formParams = [], array $guzzleRequestOptions = [] ) {
+    protected function makeRequest( string $method,
+                                    string $uri,
+                                    bool $requiresSecretToken = FALSE,
+                                    array $additionalQueryParameters = [],
+                                    array $formParams = [],
+                                    array $guzzleRequestOptions = [] ) {
 
         if ( 'GET' === $method ):
             $options = [
