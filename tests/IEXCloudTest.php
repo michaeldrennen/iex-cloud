@@ -2,7 +2,6 @@
 
 namespace MichaelDrennen\IEXCloud\Tests;
 
-
 use MichaelDrennen\IEXCloud\Exceptions\APIKeyMissing;
 use MichaelDrennen\IEXCloud\Exceptions\EndpointNotFound;
 use MichaelDrennen\IEXCloud\Exceptions\UnknownSymbol;
@@ -10,11 +9,9 @@ use MichaelDrennen\IEXCloud\Responses\Stocks\StockStats;
 
 class IEXCloudTest extends IEXCloudTestBaseTestCase {
 
-
-
-
     /**
      * @test
+     * @group stats
      */
     public function stockStatsWithValidSymbolShouldReturnStockStatsObject() {
         $iexCloud   = $this->getIEXCloudSandboxedStableInstance();
