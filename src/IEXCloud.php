@@ -20,6 +20,7 @@ class IEXCloud {
     use AccountTrait;
     use KeyStatsTrait;
     use HistoricalPricesTrait;
+
     //use LastTrait; // See notes.
     use QuoteTrait;
     use CompanyTrait;
@@ -75,13 +76,14 @@ class IEXCloud {
 
     /**
      * IEXCloud constructor.
-     * @param string $publishableToken
-     * @param string $secretToken
-     * @param bool $sandbox
-     * @param bool $sse
-     * @param string $version
+     *
+     * @param string|null $publishableToken
+     * @param string|null $secretToken
+     * @param bool        $sandbox
+     * @param bool        $sse
+     * @param string      $version
      */
-    public function __construct( string $publishableToken, string $secretToken, bool $sandbox = FALSE, bool $sse = FALSE, string $version = 'stable' ) {
+    public function __construct( string $publishableToken = NULL, string $secretToken = NULL, bool $sandbox = FALSE, bool $sse = FALSE, string $version = 'stable' ) {
         $this->publishableToken = $publishableToken;
         $this->secretToken      = $secretToken;
         $this->sandbox          = $sandbox;
@@ -94,6 +96,7 @@ class IEXCloud {
 
     /**
      * Sets the base URL to be used requests to IEX Cloud API endpoints.
+     *
      * @codeCoverageIgnore
      */
     protected function setBaseURL() {
@@ -121,8 +124,10 @@ class IEXCloud {
 
     /**
      * IEX Cloud offers a bunch of options (like filtering results) that are passed as part of the query string.
-     * @param array $options The existing $options array used by the Guzzle client. It gets added to and returned by this function.
+     *
+     * @param array $options                   The existing $options array used by the Guzzle client. It gets added to and returned by this function.
      * @param array $additionalQueryParameters An array of name => value pairs that will get added to the query string sent to the server.
+     *
      * @return array The modified $options array to be used by the Guzzle client.
      */
     protected function setAdditionalQueryParameters( array $options, array $additionalQueryParameters = [] ): array {
@@ -146,8 +151,10 @@ class IEXCloud {
     /**
      * I originally created this method to pass the debug flag into the GuzzleHTTP
      * request options for development and testing.
+     *
      * @param array $options
      * @param array $guzzleRequestOptions
+     *
      * @return array
      * @see http://docs.guzzlephp.org/en/stable/request-options.html
      */
@@ -161,7 +168,9 @@ class IEXCloud {
 
     /**
      * Some of the IEX Cloud API endpoints require the secret token. These are primarily endpoints that effect your account.
+     *
      * @param bool $requiresSecretToken
+     *
      * @return string
      */
     protected function getProperToken( bool $requiresSecretToken = FALSE ) {
@@ -175,10 +184,11 @@ class IEXCloud {
     /**
      * @param string $method
      * @param string $uri
-     * @param bool $requiresSecretToken
-     * @param array $additionalQueryParameters
-     * @param array $formParams Parameters for a POST request.
-     * @param array $guzzleRequestOptions // @see http://docs.guzzlephp.org/en/stable/request-options.html
+     * @param bool   $requiresSecretToken
+     * @param array  $additionalQueryParameters
+     * @param array  $formParams           Parameters for a POST request.
+     * @param array  $guzzleRequestOptions // @see http://docs.guzzlephp.org/en/stable/request-options.html
+     *
      * @return mixed|\Psr\Http\Message\ResponseInterface
      * @throws APIKeyMissing
      * @throws EndpointNotFound
@@ -188,10 +198,10 @@ class IEXCloud {
      */
     protected function makeRequest( string $method,
                                     string $uri,
-                                    bool $requiresSecretToken = FALSE,
-                                    array $additionalQueryParameters = [],
-                                    array $formParams = [],
-                                    array $guzzleRequestOptions = [] ) {
+                                    bool   $requiresSecretToken = FALSE,
+                                    array  $additionalQueryParameters = [],
+                                    array  $formParams = [],
+                                    array  $guzzleRequestOptions = [] ) {
 
         if ( 'GET' === $method ):
             $options = [
